@@ -1,11 +1,7 @@
-let url = 'https://docs.google.com/spreadsheets/d/14WsYKGWUVRZL2YXHLPcjiNyfTWTjaRlLGcPEAKndsmA/export?format=csv&id=14WsYKGWUVRZL2YXHLPcjiNyfTWTjaRlLGcPEAKndsmA&gid=1378136055'
-let sheet_id = '14WsYKGWUVRZL2YXHLPcjiNyfTWTjaRlLGcPEAKndsmA'
-let page_id = '1378136055'
-var https = require('https')
-var path = require('path')
-const fs = require('fs')
-const fetch = require('node-fetch')
-let settings = {method:'Get'};
+let url = 'https://docs.google.com/spreadsheets/d/14WsYKGWUVRZL2YXHLPcjiNyfTWTjaRlLGcPEAKndsmA/export?format=csv&id=14WsYKGWUVRZL2YXHLPcjiNyfTWTjaRlLGcPEAKndsmA&gid=1378136055';
+var https = require('https');
+var path = require('path');
+const fs = require('fs');
 var today = new Date();
 var hrs = today.getHours();
 var min = today.getMinutes();
@@ -14,10 +10,7 @@ var date = today.getDate();
 var month = today.getMonth();
 var year = today.getFullYear();
 var last_update = date+'/'+month+'/'+year+' '+hrs+':'+min+':'+sec;
-/*fetch(url,settings).then((res) => res
-).then((json)=> {
-    console.log(json.feed.updated.$t);
-});*/
+
 https.get(url,function(resp) {
     var body = '';
     resp.on('data',function(data){
@@ -39,48 +32,17 @@ https.get(url,function(resp) {
         //console.log(temp);
         head_row = rows[0];
         //console.log(head_row);
-        /* structure of states 
-        name: <name of the state>
-         total: {beds,doctors,icu_beds,nurses,ventilators}
-         districts: [{name:<name of district>,total: {beds,doctors,icu_beds,nurses,ventilators}},{}]
-        
-        
 
-       for(var i =1;i<rows.length;i++){
-            var t = {}
-
-       }
-        
-        for (var i = 0;i<rows.length;i++){
-            json.push(rows[i].split(/\t/i));
-        }*/
-        fs.writeFileSync(path.resolve(__dirname,'./sheet_final.json'),JSON.stringify(temp));
-        console.log('Generated sheet.json');
+        fs.writeFileSync(path.resolve(__dirname,'./resources.json'),JSON.stringify(temp));
+        console.log('Generated resources.json');
 
     });
 });
-/*
-var data = fs.readFileSync('./final_data.csv',{encding:'utf8',flag:'r'})
-data = ab2str(data);
-var rows = data.split(/\r\n/i);
-console.log(rows);
-final_data = []
-for(var j = 1;j<rows.length;j++){
-    final_data.push(rows[j].split(','));
-}
-console.log(final_data);
-req_data = {}
-req_data['last_updated_time'] = last_update;
-req_data['name'] = 'India'
-req_data['states'] = groupby(final_data)
-console.log(JSON.stringify(req_data));
-fs.writeFileSync('./sheets.json',JSON.stringify(req_data));
-head_row = rows[0].split(',');
-//console.log(head_row);
-*/
+
 function ab2str(buf){
     return String.fromCharCode.apply(null,new Uint16Array(buf));
 }
+
 function groupby(data){
     console.log(data.length);
     var states = []
@@ -108,4 +70,3 @@ function groupby(data){
     console.log(states);
     return ans;
 }
-
