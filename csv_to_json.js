@@ -7,7 +7,7 @@ var hrs = today.getHours();
 var min = today.getMinutes();
 var sec = today.getSeconds();
 var date = today.getDate();
-var month = ("0" + today.getMonth()).slice(-2);
+var month = ("0" + (today.getMonth()+ 1)).slice(-2);
 var year = today.getFullYear();
 var last_update = date+'/'+month+'/'+year+' '+hrs+':'+min+':'+sec;
 
