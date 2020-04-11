@@ -1,11 +1,7 @@
-let url = 'https://docs.google.com/spreadsheets/d/14WsYKGWUVRZL2YXHLPcjiNyfTWTjaRlLGcPEAKndsmA/export?format=csv&id=14WsYKGWUVRZL2YXHLPcjiNyfTWTjaRlLGcPEAKndsmA&gid=1378136055'
-let sheet_id = '14WsYKGWUVRZL2YXHLPcjiNyfTWTjaRlLGcPEAKndsmA'
-let page_id = '1378136055'
-var https = require('https')
-var path = require('path')
-const fs = require('fs')
-const fetch = require('node-fetch')
-let settings = {method:'Get'};
+let url = 'https://docs.google.com/spreadsheets/d/14WsYKGWUVRZL2YXHLPcjiNyfTWTjaRlLGcPEAKndsmA/export?format=csv&id=14WsYKGWUVRZL2YXHLPcjiNyfTWTjaRlLGcPEAKndsmA&gid=1378136055';
+var https = require('https');
+var path = require('path');
+const fs = require('fs');
 var today = new Date();
 var hrs = today.getHours();
 var min = today.getMinutes();
@@ -14,10 +10,7 @@ var date = today.getDate();
 var month = ("0" + today.getMonth()).slice(-2);
 var year = today.getFullYear();
 var last_update = date+'/'+month+'/'+year+' '+hrs+':'+min+':'+sec;
-/*fetch(url,settings).then((res) => res
-).then((json)=> {
-    console.log(json.feed.updated.$t);
-});*/
+
 https.get(url,function(resp) {
     var body = '';
     resp.on('data',function(data){
@@ -40,6 +33,7 @@ https.get(url,function(resp) {
         temp['states'] = groupby(final_data);
         console.log(final_data);
         head_row = rows[0];
+
         console.log(head_row);
         
         fs.writeFileSync(path.resolve(__dirname,'./medresources/'+date+month+year+'.json'),JSON.stringify(temp));
@@ -59,6 +53,7 @@ function filler(data){
     }
     return data;
 }
+
 function ab2str(buf){
     return String.fromCharCode.apply(null,new Uint16Array(buf));
 }
@@ -115,6 +110,7 @@ function make_sets(data){
     console.log(ans);
     return data;
 }
+
 
 function groupby(data){
     console.log(data.length);
