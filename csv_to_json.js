@@ -11,7 +11,7 @@ var hrs = today.getHours();
 var min = today.getMinutes();
 var sec = today.getSeconds();
 var date = today.getDate();
-var month = today.getMonth();
+var month = ("0" + today.getMonth()).slice(-2);
 var year = today.getFullYear();
 var last_update = date+'/'+month+'/'+year+' '+hrs+':'+min+':'+sec;
 /*fetch(url,settings).then((res) => res
@@ -41,45 +41,13 @@ https.get(url,function(resp) {
         console.log(final_data);
         head_row = rows[0];
         console.log(head_row);
-        /* structure of states 
-        name: <name of the state>
-         total: {beds,doctors,icu_beds,nurses,ventilators}
-         districts: [{name:<name of district>,total: {beds,doctors,icu_beds,nurses,ventilators}},{}]
         
-        
-
-       for(var i =1;i<rows.length;i++){
-            var t = {}
-
-       }
-        
-        for (var i = 0;i<rows.length;i++){
-            json.push(rows[i].split(/\t/i));
-        }*/
-        fs.writeFileSync(path.resolve(__dirname,'./sheet_final.json'),JSON.stringify(temp));
-        console.log('Generated sheet_final.json');
+        fs.writeFileSync(path.resolve(__dirname,'./medresources/'+date+month+year+'.json'),JSON.stringify(temp));
+        console.log('Generated '+date+month+year+'.json');
 
     });
 });
-/*
-var data = fs.readFileSync('./final_data.csv',{encding:'utf8',flag:'r'})
-data = ab2str(data);
-var rows = data.split(/\r\n/i);
-console.log(rows);
-final_data = []
-for(var j = 1;j<rows.length;j++){
-    final_data.push(rows[j].split(','));
-}
-console.log(final_data);
-req_data = {}
-req_data['last_updated_time'] = last_update;
-req_data['name'] = 'India'
-req_data['states'] = groupby(final_data)
-console.log(JSON.stringify(req_data));
-fs.writeFileSync('./sheets.json',JSON.stringify(req_data));
-head_row = rows[0].split(',');
-//console.log(head_row);
-*/
+
 function filler(data){
     /*4 to 8*/
     for(var i = 0;i<data.length;i++){
@@ -99,22 +67,22 @@ function make_sets(data){
     /*state,district,blah blah*/
     var ans = {}
     for(var i = data.length-1;i>=0;i--){
-        console.log("entered index:",i);
+        //console.log("entered index:",i);
         if(ans[data[i][1]]!== undefined){ //searching for state in the ans dict
             //console.log("found state:",data[i][1]);
             var temp = ans[data[i][1]];
-            console.log("found state:",data[i][1],ans);
+            //console.log("found state:",data[i][1],ans);
             if(temp[data[i][2]] !== undefined){ //searching for district in the temp subdict
-                console.log("found district:",data[i][2],temp[data[i][2]]);
+                //console.log("found district:",data[i][2],temp[data[i][2]]);
                /* var func = function(element){
                     console.log(element === data[i][3],element,data[i][3]);
                     return(element === data[i][3]);   //a function to check if this hospital has previously appeared in the spreadsheet
                 }
                 var index = temp[data[i][2]].indexOf(func);*/
                 var hosp = temp[data[i][2]][data[i][3]];
-                console.log("searching for hospital:",data[i][3]);
+                //console.log("searching for hospital:",data[i][3]);
                 if(hosp !== undefined){
-                    console.log("replacing null values for",data[i][3]," with new values if any");
+                    //console.log("replacing null values for",data[i][3]," with new values if any");
                 for(var j = 4;j<=8;j++){
                     if(data[hosp][j] === '0' && data[i][j]!=='0'){
                         data[hosp][j] = data[i][j];
@@ -123,7 +91,7 @@ function make_sets(data){
                     data[i][j] = '0';
                 }
             }else {
-                console.log("marked hospital:",data[i][3]);
+                //console.log("marked hospital:",data[i][3]);
                 ans[data[i][1]][data[i][2]][data[i][3]] = i;
             }
                 
@@ -133,14 +101,14 @@ function make_sets(data){
                 ans[data[i][1]][data[i][2]] = {}
                 ans[data[i][1]][data[i][2]][data[i][3]] = i;
 
-                console.log("creating new district:",data[i][2],ans);
+                //console.log("creating new district:",data[i][2],ans);
             }
         }else {
             
             ans[data[i][1]] = {}
             ans[data[i][1]][data[i][2]] = {}
                 ans[data[i][1]][data[i][2]][data[i][3]] = i;
-            console.log("creating new state:",data[i][1],ans);
+            //console.log("creating new state:",data[i][1],ans);
         }
     }
 
@@ -162,7 +130,7 @@ function groupby(data){
             return element === data[i][2];
         }
         var index = states[data[i][1]].findIndex(func);
-        console.log('i:' + i +',' + index+':'+data[i][2]);
+        //console.log('i:' + i +',' + index+':'+data[i][2]);
         if(index!= -1){
             var temp = ans[state_index]['districts'][index]['total'];
             temp['beds'] = Number(temp['beds']) + Number(data[i][4]);
@@ -182,7 +150,7 @@ function groupby(data){
             te['total'] = temp;
 
             ans[state_index]['districts'].push(te);
-            console.log(ans[state_index]['districts']);
+            //console.log(ans[state_index]['districts']);
         }
         ans[state_index]['total']['beds'] = ans[state_index]['total']['beds'] + Number(data[i][4]);
         ans[state_index]['total']['doctors'] = ans[state_index]['total']['doctors'] +  Number(data[i][7]);
@@ -206,7 +174,7 @@ function groupby(data){
     return ans;
 }
 
-console.log(compare_timestamp("4/4/2020 0:47:15","4/3/2020 0:47:15"));
+//console.log(compare_timestamp("4/4/2020 0:47:15","4/3/2020 0:47:15"));
 function compare_timestamp(t1,t2){
     var t11 = t1.split(" ")
     var t21 = t2.split(" ")
