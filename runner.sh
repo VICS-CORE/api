@@ -1,7 +1,7 @@
 echo "starting job@",$(date)
 token=""
 
-git pull https://github.com/VICS-CORE/covid-api.git && cd covid-api
+git pull git@github.com:VICS-CORE/covid-api.git && cd covid-api
 
 node csv_to_json.js
 
@@ -11,3 +11,7 @@ git commit -m "daily update of med resources at $(date)"
 git push origin master
 
 echo "Done pushing -- please check"
+cd ..
+rm -rf covid-api
+
+echo "cleaned covid-api from workspace"
