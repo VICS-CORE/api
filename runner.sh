@@ -3,7 +3,7 @@
 echo "starting job@",$(date)
 token=""
 
-git pull git@github.com:VICS-CORE/covid-api.git && cd covid-api
+cd covid-api && git pull git@github.com:VICS-CORE/covid-api.git
 
 node csv_to_json.js
 
@@ -14,6 +14,6 @@ git push origin master
 
 echo "Done pushing -- please check"
 cd ..
-rm -rf covid-api
 
-echo "cleaned covid-api from workspace"
+#rm -rf covid-api
+#echo "cleaned covid-api from workspace"
