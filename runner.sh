@@ -8,6 +8,6 @@ node csv_to_json.js
 git add .
 git commit -m "daily update of med resources at $(date)"
 
-git push remote origin
+git push origin master
 
 echo "Done pushing -- please check"
