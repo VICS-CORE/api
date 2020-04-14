@@ -5,7 +5,7 @@ token=""
 
 cd covid-api && git pull git@github.com:VICS-CORE/covid-api.git
 
-node csv_to_json.js
+nodejs csv_to_json.js
 
 git add .
 git commit -m "daily update of med resources at $(date)"
