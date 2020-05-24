@@ -1,4 +1,5 @@
 from sheets import read_sheet
+from covid_warriors_data import fetch_data
 import datetime
 import json
 
@@ -12,7 +13,7 @@ def daterange(start_date, end_date):
         yield start_date + datetime.timedelta(n)
 
 # fill current date data in a timeline object, given previous date
-def fill_tlo(tlo, data, cd, pd):
+def fill_tlo(tlo, data, cd, pd, covid_warriors_data=[]):
     # init current date's district timeline with previous date's data else 0s
     tlo[cd] = tlo[pd][:] if pd in tlo else tlo.get(cd, [0]*15)
 
@@ -28,7 +29,10 @@ def fill_tlo(tlo, data, cd, pd):
         idx = LEGEND.index(row['metric'])
         val = int(row['quantity'])
         tlo[cd][idx] = max(val, tlo[cd][idx])
-
+        if len(covid_warriors_data) >= 3:
+            tlo[cd][3] = covid_warriors_data[3]
+            tlo[cd][4] = covid_warriors_data[4]
+ 
 # generate an aggregate timeline by adding up districts or states on a particular date
 def agg_tlo(parent_obj, key, cd):
     # compute agg at cd (current date)
@@ -52,6 +56,8 @@ def agg_tlo(parent_obj, key, cd):
 # fetch data
 url = "https://docs.google.com/spreadsheets/export?format=csv&id=14WsYKGWUVRZL2YXHLPcjiNyfTWTjaRlLGcPEAKndsmA&gid=1696158556"
 data = read_sheet(url, True)
+covid_warriors_data = fetch_data()
+
 if QUALITY == "reliable":
     data = filter(lambda x: x['quality'] == QUALITY, data)
 
@@ -79,10 +85,14 @@ for cd_obj in daterange(min_date_obj, max_date_obj):
     if len(cd_data): print("Found", len(cd_data), "records.")
 
     # STATE LOOP
+    covid_warriors_states = covid_warriors_data['states']
+
     for state in tl['states']:
         print("STATE:", state['name'])
         
         # DIST LOOP
+        covid_warriors_state = next(filter(lambda i: i['name'].lower().__eq__(state['name'].lower()), covid_warriors_states), False)
+
         for dist in state['districts']:
             print("DISTRICT:", dist['name'])
             
@@ -96,7 +106,11 @@ for cd_obj in daterange(min_date_obj, max_date_obj):
         state_data = list(filter (lambda x: (state['name'] == x['state']) and (x['district'] == 'Unknown'), cd_data))
         if len(state_data): print("Found", len(state_data), "state records.")
         # fill state level timeline object from data
-        fill_tlo(state['timeline'], state_data, cd, pd)
+
+        if covid_warriors_state and state_data:
+            covid_warriors_state_data = covid_warriors_state['timeline']['2020-05-23']
+
+        fill_tlo(state['timeline'], state_data, cd, pd, covid_warriors_state_data)
         # agg dist data
         agg_tlo(state, 'districts', cd)
 
