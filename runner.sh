@@ -1,17 +1,15 @@
-#### for cronjob #####
+#!/bin/bash
+echo "Generating statewise predictions", $(date)
 
-echo "starting job@",$(date)
-
-cd covid-api && git pull git@github.com:VICS-CORE/covid-api.git
-
-pushd medresources
-python3 gen_timeline.py
+pushd covid-net
+python -m scripts.gen_statewise_predictions 0001 latest-e1740.pt -d 200 -vpf ../covid-api/vp/1.1740.json
 popd
 
-git add .
-git commit -m "daily update of medresources timeline at $(date)"
-
+pushd covid-api
+git add vp
+git commit -m "Daily update to 1.1740"
 git push origin master
+popd
 
-echo "Done pushing -- please check"
+echo "Pushed"
 cd ..
