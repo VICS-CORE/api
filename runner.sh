@@ -2,7 +2,7 @@
 echo "Generating statewise predictions", $(date)
 
 pushd covid-net
-python -m scripts.gen_statewise_predictions 0001 latest-e1740.pt -d 200 -vpf ../covid-api/vp/1.1740.json -trf ../covid-api/predictions.json
+/opt/conda/bin/python -m scripts.gen_statewise_predictions 0001 latest-e1740.pt -d 200 -vpf ../covid-api/vp/1.1740.json -trf ../covid-api/predictions.json
 popd
 
 pushd covid-api
